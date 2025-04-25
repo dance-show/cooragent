@@ -69,7 +69,23 @@ cp .env.example .env
 # 通过 CLi 本地运行
 uv run cli.py 
 ```
+3.在windows上安装
 
+```bash
+# 如果在windows平台运行本项目，除了上述步骤外，还需要安装：
+pip install pyreadline (conda)
+uv pip install pyreadline (venv)
+```
+然后，你需要找到Anaconda安装路径下的 `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py`
+或者 venv路径下的 `.venv\Lib\site-packages\pyreadline\py3k_compat.py`
+并将
+```python
+return isinstance(x, collections.Callable)
+```
+修改为
+```python
+return isinstance(x, collections.abc.Callable)
+```
 ## 配置
 
 在项目根目录创建 `.env` 文件并配置以下环境变量：

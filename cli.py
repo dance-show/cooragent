@@ -16,7 +16,7 @@ from rich.prompt import Prompt, Confirm
 from dotenv import load_dotenv
 import functools
 import shlex
-import readline
+import platform
 import atexit
 import logging
 
@@ -25,6 +25,12 @@ load_dotenv()
 
 from src.interface.agent_types import *
 from src.service.app import Server
+
+if platform.system() == "Windows":
+    from pyreadline import Readline
+    readline = Readline()
+else:
+    import readline
 
 custom_theme = Theme({
     "info": "dim cyan",

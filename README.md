@@ -65,6 +65,23 @@ cp .env.example .env
 # Run the project
 uv run cli.py 
 ```
+3. Installed on Windows
+
+```bash
+# Note:If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
+pip install pyreadline (conda)
+uv pip install pyreadline (venv)
+```
+Then, you need to find `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py` in your Anaconda installation path 
+or `.venv\Lib\site-packages\pyreadline\py3k_compat.py` in your venv path 
+and change 
+```python
+return isinstance(x, collections.Callable)
+```
+to
+```python
+return isinstance(x, collections.abc.Callable)
+```
 
 ## Configuration
 
