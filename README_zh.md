@@ -45,7 +45,19 @@ cp .env.example .env
 # 通过 CLi 本地运行
 python cli.py 
 ```
-
+如果在windows平台运行本项目，除了上述步骤外，还需要安装：
+```bash
+pip install pyreadline
+```
+然后，你需要找到Anaconda安装路径下的 `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py`
+并将
+```python
+return isinstance(x, collections.Callable)
+```
+修改为
+```python
+return isinstance(x, collections.abc.Callable)
+```
 2. Installation using venv
 ```bash
 git clone https://github.com/LeapLabTHU/cooragent.git
@@ -69,15 +81,11 @@ cp .env.example .env
 # 通过 CLi 本地运行
 uv run cli.py 
 ```
-3.在windows上安装
-
+如果在windows平台运行本项目，除了上述步骤外，还需要安装：
 ```bash
-# 如果在windows平台运行本项目，除了上述步骤外，还需要安装：
-pip install pyreadline (conda)
-uv pip install pyreadline (venv)
+uv pip install pyreadline
 ```
-然后，你需要找到Anaconda安装路径下的 `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py`
-或者 venv路径下的 `.venv\Lib\site-packages\pyreadline\py3k_compat.py`
+然后，你需要找到venv路径下的 `.venv\Lib\site-packages\pyreadline\py3k_compat.py`
 并将
 ```python
 return isinstance(x, collections.Callable)
@@ -222,8 +230,7 @@ agent_obj = Agent(user_id="share",
 MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
 ```
 代码见 [src/mcp/excel_agent.py](./src/mcp/excel_agent.py)
-
-
+并在 `.env` 文件中将 `MCP_AGENT` 设置为 True （默认为False）
 
 ## 全面的兼容性
 Cooragent 在设计上追求极致的开放性和兼容性，确保能够无缝融入现有的 AI 开发生态，并为开发者提供最大的灵活性。这主要体现在对 Langchain 工具链的深度兼容、对MCP (Model Context Protocol) 协议的支持以及全面的 API 调用能力上。

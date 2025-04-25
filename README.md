@@ -42,7 +42,19 @@ cp .env.example .env
 
 python cli.py
 ```
-
+If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
+```bash
+pip install pyreadline 
+```
+Then, you need to find `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py` in your Anaconda installation path 
+and change 
+```python
+return isinstance(x, collections.Callable)
+```
+to
+```python
+return isinstance(x, collections.abc.Callable)
+```
 2. Installation using venv
 ```bash
 git clone https://github.com/LeapLabTHU/cooragent.git
@@ -65,15 +77,11 @@ cp .env.example .env
 # Run the project
 uv run cli.py 
 ```
-3. Installed on Windows
-
+If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
 ```bash
-# Note:If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
-pip install pyreadline (conda)
-uv pip install pyreadline (venv)
+uv pip install pyreadline
 ```
-Then, you need to find `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py` in your Anaconda installation path 
-or `.venv\Lib\site-packages\pyreadline\py3k_compat.py` in your venv path 
+Then, you need to find `.venv\Lib\site-packages\pyreadline\py3k_compat.py` in your venv path 
 and change 
 ```python
 return isinstance(x, collections.Callable)
@@ -221,6 +229,7 @@ agent_obj = Agent(user_id="share",
 MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
 ```
 Code can be found at [src/mcp/excel_agent.py](./src/mcp/excel_agent.py)
+And set `MCP_AGENT` to True (default is False) in `.env` file
 
 
 
