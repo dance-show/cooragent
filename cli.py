@@ -27,6 +27,8 @@ from src.interface.agent_types import *
 from src.service.app import Server
 
 if platform.system() == "Windows":
+    import collections
+    collections.Callable = collections.abc.Callable
     from pyreadline import Readline
     readline = Readline()
 else:

@@ -16,7 +16,7 @@ Cooragent is an AI agent collaboration community. In this community, you can cre
 </h5>
 
 # Infinite Possibilities
-Cooragent has two working : **Agent Factory** and **Agent Workflow**.
+Cooragent has two working mode : **Agent Factory** and **Agent Workflow**.
 - **Agent Factory** : You only need to describe the agent, and Cooragent will generate an agent based on your needs. In Agent Factory mode, the system automatically analyzes user requirements and gains a deep understanding of the user through memory and expansion, eliminating the need for complex Prompt design. Based on a deep understanding of user needs, the Planner selects appropriate tools, automatically refines the Prompt, and gradually completes the agent construction. After construction, the agent can be used immediately, but you can still edit it to optimize its behavior and functionality.
 - **Agent Workflow** : You only need to describe the target task you want to complete, and Cooragent will automatically analyze the task requirements and select suitable agents for collaboration. The Planner combines agents based on their areas of expertise, plans the task steps and completion order, and then hands over the task to the task distribution node 'publish' for task release. Each agent receives its own task and collaborates to complete it.
 Cooragent can continuously evolve in these two modes, thus creating infinite possibilities.
@@ -42,19 +42,7 @@ cp .env.example .env
 
 python cli.py
 ```
-If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
-```bash
-pip install pyreadline 
-```
-Then, you need to find `.\envs\cooragent\Lib\site-packages\pyreadline\py3k_compat.py` in your Anaconda installation path 
-and change 
-```python
-return isinstance(x, collections.Callable)
-```
-to
-```python
-return isinstance(x, collections.abc.Callable)
-```
+
 2. Installation using venv
 ```bash
 git clone https://github.com/LeapLabTHU/cooragent.git
@@ -77,19 +65,7 @@ cp .env.example .env
 # Run the project
 uv run cli.py 
 ```
-If you want to run this project on the Windows platform, in addition to the above steps, you also need to install:
-```bash
-uv pip install pyreadline
-```
-Then, you need to find `.venv\Lib\site-packages\pyreadline\py3k_compat.py` in your venv path 
-and change 
-```python
-return isinstance(x, collections.Callable)
-```
-to
-```python
-return isinstance(x, collections.abc.Callable)
-```
+**Note**: If running the project's CLI tool on Windows, besides the steps above, you also need to install additional dependencies. For details, please refer to [Windows Platform Support](./docs/QA.md).
 
 ## Configuration
 
@@ -228,9 +204,13 @@ agent_obj = Agent(user_id="share",
 
 MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
 ```
-Code can be found at [src/mcp/excel_agent.py](./src/mcp/excel_agent.py)
-And set `MCP_AGENT` to True (default is False) in `.env` file
+Code can be found at [src/mcp/excel_agent.py](./src/mcp/excel_agent.py).
+**Note** : To enable MCP support, you need to set MCP_AGENT to True in the .env file (it defaults to False).
 
+
+## Documentation & Support
+- [Frequently Asked Questions (FAQ)](./docs/QA.md)
+- [Business Support Plan](./docs/business_support.md)
 
 
 ## Comprehensive Compatibility
