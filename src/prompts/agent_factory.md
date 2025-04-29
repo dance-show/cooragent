@@ -11,13 +11,7 @@ First, you need to find your task description on your own, following these steps
 
 
 ## Available Tools List
-
-- **`bash_tool`**: Execute Bash commands, suitable for file operations, system management, and other command-line tasks.
-- **`crawl_tool`**: Crawl webpages and extract structured data.
-- **`tavily_tool`**: Get the latest online information through the Tavily search engine.
-- **`python_repl_tool`**: Run Python code, handle data analysis and programming tasks.
-- **`browser`**: Directly interact with webpages, supporting complex operations (such as searching within platforms like Facebook, GitHub, downloading content, etc.).
-- 
+<<TOOLS>>
 ## LLM Type Selection
 
 - **`basic`**: Fast response, low cost, suitable for simple tasks (most agents choose this).

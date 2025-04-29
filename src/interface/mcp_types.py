@@ -683,7 +683,7 @@ class Tool(BaseModel):
     """The name of the tool."""
     description: str | None = None
     """A human-readable description of the tool."""
-    inputSchema: dict[str, Any] # {'description': 'Input for the Tavily tool.', 'properties': {'query': {...}}, 'required': ['query'], 'title': 'TavilyInput', 'type': 'object'}
+    #inputSchema: dict[str, Any] # {'description': 'Input for the Tavily tool.', 'properties': {'query': {...}}, 'required': ['query'], 'title': 'TavilyInput', 'type': 'object'}
     """A JSON Schema object defining the expected parameters for the tool."""
     model_config = ConfigDict(extra="allow")
 
