@@ -48,66 +48,43 @@ class AgentManager:
             raise FileNotFoundError("One or more provided directories do not exist.")
         self.available_agents = {}
         self.available_tools = {}
-        self._load_agents(USR_AGENT)
-        asyncio.run(self.load_tools())
-        
-    def _create_mcp_agent(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
-        mcp_tools = []
-        for tool in tools:
-            mcp_tools.append(Tool(
-                name=tool.name,
-                description=tool.description,
-            ))
-        
-        mcp_agent = Agent(
-            agent_name=name,
-            nick_name=nick_name,
-            description=description,
-            user_id=user_id,
-            llm_type=llm_type,
-            selected_tools=mcp_tools,
-            prompt=str(prompt)
-        )
-        
-        self._save_agent(mcp_agent)
-        return mcp_agent
-        
-        
-    def _convert_mcp_agent_to_langchain_agent(self, mcp_agent: Agent):
-        _tools = []
-        try:
-            for tool in mcp_agent.selected_tools:
-                if tool.name in self.available_tools:
-                    _tools.append(self.available_tools[tool.name])
-                else:
-                    logger.info(f"Tool {tool.name} not found in available tools.")
-        except Exception as e:
-            logger.error(f"Tool {tool.name} load to langchain tool failed.")
-        
-        try:
-            _prompt = lambda state: apply_prompt_template(mcp_agent.agent_name, state)
-        except Exception as e:
-            logger.info(f"Prompt {mcp_agent.agent_name} not found in available prompts.")
-            _prompt = get_prompt_template(mcp_agent.prompt)
-            
-        langchain_agent = create_react_agent(
-            get_llm_by_type(mcp_agent.llm_type),
-            tools=_tools,
-            prompt=_prompt,
-        )
-        return langchain_agent
-        
+
+    async def initialize(self, user_agent_flag=USR_AGENT):
+        """Asynchronously initializes the AgentManager by loading agents and tools."""
+        await self._load_agents(user_agent_flag)
+        await self.load_tools()
+        logger.info(f"AgentManager initialized. {len(self.available_agents)} agents and {len(self.available_tools)} tools available.")
 
     def _create_agent_by_prebuilt(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
-        _agent = self._create_mcp_agent(user_id, name, nick_name, llm_type, tools, prompt, description)
-
+        def _create(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
+            _tools = []
+            for tool in tools:
+                _tools.append(Tool(
+                    name=tool.name,
+                    description=tool.description,
+                ))
+            
+            _agent = Agent(
+                agent_name=name,
+                nick_name=nick_name,
+                description=description,
+                user_id=user_id,
+                llm_type=llm_type,
+                selected_tools=_tools,
+                prompt=str(prompt)
+            )
+        
+            self._save_agent(_agent)
+            return _agent
+        
+        _agent = self._create(user_id, name, nick_name, llm_type, tools, prompt, description)
         self.available_agents[name] = _agent
         return
 
 
     async def load_mcp_tools(self):
         async with MultiServerMCPClient(mcp_client_config()) as client:
-            mcp_tools = client.get_tools()
+            mcp_tools = await client.get_tools() # await may not be needed
             for _tool in mcp_tools:
                 self.available_tools[_tool.name] = _tool
                     
@@ -124,8 +101,7 @@ class AgentManager:
         if USE_MCP_TOOLS:
             await self.load_mcp_tools()
 
-
-    def _save_agent(self, agent: Agent, flush=False):
+    async def _save_agent(self, agent: Agent, flush=False):
         agent_path = self.agents_dir / f"{agent.agent_name}.json"
         agent_prompt_path = self.prompt_dir / f"{agent.agent_name}.md"
         if not flush and agent_path.exists():
@@ -137,7 +113,7 @@ class AgentManager:
 
         logger.info(f"agent {agent.agent_name} saved.")
         
-    def _remove_agent(self, agent_name: str):
+    async def _remove_agent(self, agent_name: str):
         agent_path = self.agents_dir / f"{agent_name}.json"
         agent_prompt_path = self.prompt_dir / f"{agent_name}.md"
 
@@ -160,7 +136,7 @@ class AgentManager:
         except Exception as e:
              logger.error(f"Error removing agent '{agent_name}' from available_agents dictionary: {e}")
     
-    def _load_agent(self, agent_name: str, user_agent_flag: bool=False):
+    async def _load_agent(self, agent_name: str, user_agent_flag: bool=False):
         agent_path = self.agents_dir / f"{agent_name}.json"
         if not agent_path.exists():
             raise FileNotFoundError(f"agent {agent_name} not found.")
@@ -175,7 +151,7 @@ class AgentManager:
                 del self.available_agents["browser"]
             return
         
-    def _list_agents(self, user_id: str, match: str):
+    async def _list_agents(self, user_id: str = None, match: str = None):
         agents = [agent for agent in self.available_agents.values()]
         if user_id:
             agents = [agent for agent in agents if agent.user_id == user_id]
@@ -183,7 +159,7 @@ class AgentManager:
             agents = [agent for agent in agents if re.match(match, agent.agent_name)]
         return agents
 
-    def _edit_agent(self, agent: Agent):
+    async def _edit_agent(self, agent: Agent):
         try:
             _agent = self.available_agents[agent.agent_name]
             _agent.nick_name = agent.nick_name
@@ -191,20 +167,30 @@ class AgentManager:
             _agent.selected_tools = agent.selected_tools
             _agent.prompt = agent.prompt
             _agent.llm_type = agent.llm_type
-            self._save_agent(_agent, flush=True)
+            await self._save_agent(_agent, flush=True)
             return "success"
         except Exception as e:
             raise NotFoundAgentError(f"agent {agent.agent_name} not found.")
     
-    def _save_agents(self, agents: list[Agent], flush=False):
+    async def _save_agents(self, agents: list[Agent], flush=False):
         for agent in agents:
-            self._save_agent(agent, flush)  
+            await self._save_agent(agent, flush)  
         return
         
-    def _load_agents(self, user_agent_flag):
+    async def _load_agents(self, user_agent_flag):
+        load_tasks = []
         for agent_path in self.agents_dir.glob("*.json"):
-            if agent_path.stem not in [agent.agent_name for agent in self.available_agents.values()]:
-                self._load_agent(agent_path.stem, user_agent_flag)
+            agent_name = agent_path.stem
+            if agent_name not in [agent.agent_name for agent in self.available_agents.values()]:
+                load_tasks.append(self._load_agent(agent_name, user_agent_flag))
+
+        if load_tasks:
+            results = await asyncio.gather(*load_tasks, return_exceptions=True)
+            for i, result in enumerate(results):
+                 if isinstance(result, FileNotFoundError):
+                      logger.warning(f"File not found during bulk load for agent: {load_tasks[i]}. Error: {result}")
+                 elif isinstance(result, Exception):
+                      logger.error(f"Error during bulk load for agent: {load_tasks[i]}. Error: {result}")
         return   
     
     async def _list_default_tools(self):
@@ -217,7 +203,7 @@ class AgentManager:
             ))
         return mcp_tools
     
-    def _list_default_agents(self):
+    async def _list_default_agents(self):
         agents = [agent for agent in self.available_agents.values() if agent.user_id == "share"]
         return agents
     
@@ -228,3 +214,4 @@ agents_dir = get_project_root() / "store" / "agents"
 prompts_dir = get_project_root() / "store" / "prompts"
 
 agent_manager = AgentManager(tools_dir, agents_dir, prompts_dir)
+asyncio.run(agent_manager.initialize())

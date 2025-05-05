@@ -11,28 +11,24 @@ from src.interface.agent_types import State, Router
 from src.manager import agent_manager
 from src.prompts.template import apply_prompt
 from langgraph.prebuilt import create_react_agent
-from langchain_mcp_adapters.client import MultiServerMCPClient
-from src.mcp.register import MCPManager
 from src.workflow.graph import AgentWorkflow
-from src.config.env import USE_MCP_TOOLS
-from src.mcp.mcp_config import mcp_client_config
 
 logger = logging.getLogger(__name__)
 
 
-def agent_factory_node(state: State) -> Command[Literal["publisher","__end__"]]:
+async def agent_factory_node(state: State) -> Command[Literal["publisher","__end__"]]:
     """Node for the create agent agent that creates a new agent."""
     logger.info("Agent Factory Start to work \n")
     messages = apply_prompt_template("agent_factory", state)
-    response = (
+    response = await (
         get_llm_by_type(AGENT_LLM_MAP["agent_factory"])
         .with_structured_output(Router)
-        .invoke(messages)
+        .ainvoke(messages)
     )
     
     tools = [agent_manager.available_tools[tool["name"]] for tool in response["selected_tools"]]
 
-    agent_manager._create_agent_by_prebuilt(
+    await agent_manager._create_agent_by_prebuilt(
         user_id=state["user_id"],
         name=response["agent_name"],
         nick_name=response["agent_name"],
@@ -56,14 +52,14 @@ def agent_factory_node(state: State) -> Command[Literal["publisher","__end__"]]:
     )
 
 
-def publisher_node(state: State) -> Command[Literal["agent_proxy", "agent_factory", "__end__"]]:
+async def publisher_node(state: State) -> Command[Literal["agent_proxy", "agent_factory", "__end__"]]:
     """publisher node that decides which agent should act next."""
     logger.info("publisher evaluating next action")
     messages = apply_prompt_template("publisher", state)
-    response = (
+    response = await (
         get_llm_by_type(AGENT_LLM_MAP["publisher"])
         .with_structured_output(Router)
-        .invoke(messages)
+        .ainvoke(messages)
     )
     agent = response["next"]
     
@@ -103,7 +99,7 @@ async def agent_proxy_node(state: State) -> Command[Literal["publisher","__end__
     )
 
 
-def planner_node(state: State) -> Command[Literal["publisher", "__end__"]]:
+async def planner_node(state: State) -> Command[Literal["publisher", "__end__"]]:
     """Planner node that generate the full plan."""
     logger.info("Planner generating full plan \n")
     messages = apply_prompt_template("planner", state)
@@ -115,8 +111,8 @@ def planner_node(state: State) -> Command[Literal["publisher", "__end__"]]:
         messages = deepcopy(messages)
         messages[-1]["content"] += f"\n\n# Relative Search Results\n\n{json.dumps([{'titile': elem['title'], 'content': elem['content']} for elem in searched_content], ensure_ascii=False)}"
     
-    reasponse = llm.invoke(messages)
-    content = reasponse.content
+    response = await llm.ainvoke(messages)
+    content = response.content
 
     if content.startswith("```json"):
         content = content.removeprefix("```json")
@@ -141,7 +137,7 @@ def planner_node(state: State) -> Command[Literal["publisher", "__end__"]]:
     )
 
 
-def coordinator_node(state: State) -> Command[Literal["planner", "__end__"]]:
+async def coordinator_node(state: State) -> Command[Literal["planner", "__end__"]]:
     """Coordinator node that communicate with customers."""
     logger.info("Coordinator talking. \n")
     messages = apply_prompt_template("coordinator", state)

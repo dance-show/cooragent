@@ -687,9 +687,9 @@ async def remove_agent(ctx, agent_name, user_id):
         async for result_json in server._remove_agent(request):
             result = json.loads(result_json)
             if result.get("result") == "success":
-                stream_print(Panel.fit(f"[success]✅ {result.get('messages', 'Agent deleted successfully!')}[/success]", border_style="green"))
+                stream_print(Panel.fit(f"[success]✅ {result.get('message', 'Agent deleted successfully!')}[/success]", border_style="green"))
             else:
-                stream_print(Panel.fit(f"[danger]❌ {result.get('messages', 'Agent deletion failed!')}[/danger]", border_style="red"))
+                stream_print(Panel.fit(f"[danger]❌ {result.get('message', 'Agent deletion failed!')}[/danger]", border_style="red"))
     except Exception as e:
         stream_print(Panel.fit(f"[danger]Error occurred during deletion: {str(e)}[/danger]", border_style="red"))
 

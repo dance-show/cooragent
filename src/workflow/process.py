@@ -163,10 +163,7 @@ async def _process_workflow(
             }
             node_func = workflow.nodes[current_node]
 
-            if agent_name == 'agent_proxy':
-                command = await node_func(state)
-            else:
-                command = node_func(state)
+            command = await node_func(state)
             
             if hasattr(command, 'update') and command.update:
                 for key, value in command.update.items():
