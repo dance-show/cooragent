@@ -1,3 +1,4 @@
+import asyncio
 from langgraph.prebuilt import create_react_agent
 from src.interface.mcp_types import Tool
 from src.prompts import apply_prompt_template, get_prompt_template
@@ -16,8 +17,7 @@ from langchain_core.tools import tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from pathlib import Path
 from src.interface.agent_types import Agent
-from src.config.env import USR_AGENT,USE_BROWSER
-from src.config.env import MCP_TOOLS
+from src.config.env import USR_AGENT,USE_BROWSER,USE_MCP_TOOLS
 from src.mcp.mcp_config import mcp_client_config
 import logging
 import re
@@ -49,6 +49,7 @@ class AgentManager:
         self.available_agents = {}
         self.available_tools = {}
         self._load_agents(USR_AGENT)
+        asyncio.run(self.load_tools())
         
     def _create_mcp_agent(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
         mcp_tools = []
@@ -103,12 +104,14 @@ class AgentManager:
         self.available_agents[name] = _agent
         return
 
-    async def load_tools(self):
-        if MCP_TOOLS in ['true', 'True']:
-            async with MultiServerMCPClient(mcp_client_config()) as client:
-                mcp_tools = client.get_tools()
-                for _tool in mcp_tools:
-                    self.available_tools[_tool.name] = _tool
+
+    async def load_mcp_tools(self):
+        async with MultiServerMCPClient(mcp_client_config()) as client:
+            mcp_tools = client.get_tools()
+            for _tool in mcp_tools:
+                self.available_tools[_tool.name] = _tool
+                    
+    async def load_tools(self):        
         self.available_tools.update({
             bash_tool.name: bash_tool,
             browser_tool.name: browser_tool,
@@ -116,9 +119,10 @@ class AgentManager:
             python_repl_tool.name: python_repl_tool,
             tavily_tool.name: tavily_tool,
         })
-        if USE_BROWSER in ["false", "False"]:
-            del self.available_tools[browser_tool.name]
-        return
+        if not USE_BROWSER:
+            del self.available_tools[browser_tool.name]    
+        if USE_MCP_TOOLS:
+            await self.load_mcp_tools()
 
 
     def _save_agent(self, agent: Agent, flush=False):

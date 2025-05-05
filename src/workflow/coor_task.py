@@ -14,7 +14,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from src.mcp.register import MCPManager
 from src.workflow.graph import AgentWorkflow
-from src.config.env import MCP_TOOLS
+from src.config.env import USE_MCP_TOOLS
 from src.mcp.mcp_config import mcp_client_config
 
 logger = logging.getLogger(__name__)
@@ -85,23 +85,11 @@ def publisher_node(state: State) -> Command[Literal["agent_proxy", "agent_factor
 async def agent_proxy_node(state: State) -> Command[Literal["publisher","__end__"]]:
     """Proxy node that acts as a proxy for the agent."""
     _agent = agent_manager.available_agents[state["next"]]
-    print(_agent.selected_tools)
-    if MCP_TOOLS in ['true', 'True']:
-        async with MultiServerMCPClient(mcp_client_config()) as client:
-            mcp_tools = client.get_tools()
-            for _tool in mcp_tools:
-                agent_manager.available_tools[_tool.name] = _tool
-            agent = create_react_agent(
-                get_llm_by_type(_agent.llm_type),
-                tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
-                prompt=apply_prompt(state, _agent.prompt),
-            )
-    else:
-        agent = create_react_agent(
-            get_llm_by_type(_agent.llm_type),
-            tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
-            prompt=apply_prompt(state, _agent.prompt),
-        )
+    agent = create_react_agent(
+        get_llm_by_type(_agent.llm_type),
+        tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
+        prompt=apply_prompt(state, _agent.prompt),
+    )
 
     response = await agent.ainvoke(state)
 
