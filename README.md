@@ -174,39 +174,43 @@ remove-agent -n <agent_name> -u <user-id>
 run -t agent_workflow -u test -m 'Use the task planning agent, web crawler agent, code execution agent, browser operation agent, report writing agent, and file operation agent to plan a trip to Yunnan for the May Day holiday in 2025. First, run the web crawler agent to fetch information about Yunnan tourist attractions, use the browser operation agent to browse the attraction information and select the top 10 most worthwhile attractions. Then, plan a 5-day itinerary, use the report writing agent to generate a travel report, and finally use the file operation agent to save the report as a PDF file.'
 ```
 
-## Create an Agent via MCP
-```python
-server_params = StdioServerParameters(
-    command="python",
-    args=[str(get_project_root()) + "/src/mcp/excel_mcp/server.py"]
-)
+## Integrate MCP Services (like Claude Desktop)
 
-async def excel_agent():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            # Initialize the connection
-            await session.initialize()
-            # Get tools
-            tools = await load_mcp_tools(session)
-            # Create and run the agent
-            agent = create_react_agent(model, tools)
-            return agent
+Enhance your Agents by integrating external services and tools via the Model Context Protocol (MCP). This is similar to how desktop AI assistants like Claude Desktop manage external functionalities.
+
+**Configuration:**
+
+1.  **Locate/Create Config File**:
+    Find or create `src/config/mcp.json` in your project root.
+
+2.  **Add MCP Services**:
+    Define your MCP services in this JSON file. Each service has a unique key and a configuration object.
+
+    Example (`src/config/mcp.json`):
+    ```json
+    {
+        "mcpServers": {
+          "your-custom-local-server": {
+            "command": "python",
+            "args": ["-m", "your_mcp_server_module", "--port", "8080"],
+            "env": {
+              "API_KEY": "YOUR_LOCAL_SERVER_API_KEY"
+            }
+          },
+          "your-custom-remote-service": {
+            "url": "https://your.mcp.provider.com/api/v1/mcp_endpoint",
+            "env": {
+              "REMOTE_SERVICE_AUTH_TOKEN": "YOUR_AUTH_TOKEN_HERE"
+            }
+          }
+        }
+    }
+    ```
 
 
-agent = asyncio.run(excel_agent())
-agent_obj = Agent(user_id="share", 
-                  agent_name="mcp_excel_agent", 
-                  nick_name="mcp_excel_agent", 
-                  description="The agent is good at manipulating excel files, which includes creating, reading, writing, and analyzing excel files", 
-                  llm_type=LLMType.BASIC, 
-                  selected_tools=[], 
-                  prompt="")
+**How it Works:**
 
-MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
-```
-Code can be found at [src/mcp/excel_agent.py](./src/mcp/excel_agent.py).
-**Note** : To enable MCP support, you need to set MCP_AGENT to True in the .env file (it defaults to False).
-
+Once configured, Cooragent registers these MCP services as available tools. Agents can then select and use these tools during task planning and execution, enabling more complex functionalities.
 
 ## Documentation & Support
 - [Frequently Asked Questions (FAQ)](./docs/QA.md)

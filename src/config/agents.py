@@ -14,5 +14,3 @@ AGENT_LLM_MAP: dict[str, LLMType] = {
     "browser": "basic",  
     "reporter": "basic",  
 }
-
-
