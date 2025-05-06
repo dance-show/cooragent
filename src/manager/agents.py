@@ -17,7 +17,7 @@ from langchain_core.tools import tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from pathlib import Path
 from src.interface.agent_types import Agent
-from src.config.env import USR_AGENT,USE_BROWSER,USE_MCP_TOOLS
+from src.config.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
 from src.mcp.mcp_config import mcp_client_config
 import logging
 import re
@@ -56,7 +56,7 @@ class AgentManager:
         logger.info(f"AgentManager initialized. {len(self.available_agents)} agents and {len(self.available_tools)} tools available.")
 
     def _create_agent_by_prebuilt(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
-        def _create(self, user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
+        def _create(user_id: str, name: str, nick_name: str, llm_type: str, tools: list[tool], prompt: str, description: str):
             _tools = []
             for tool in tools:
                 _tools.append(Tool(
@@ -77,7 +77,7 @@ class AgentManager:
             self._save_agent(_agent)
             return _agent
         
-        _agent = self._create(user_id, name, nick_name, llm_type, tools, prompt, description)
+        _agent = _create(user_id, name, nick_name, llm_type, tools, prompt, description)
         self.available_agents[name] = _agent
         return
 
@@ -147,8 +147,7 @@ class AgentManager:
                 self.available_agents[_agent.agent_name] = _agent
             elif user_agent_flag:
                 self.available_agents[_agent.agent_name] = _agent
-            if USE_BROWSER in ["false", "False"] and "browser" in self.available_agents:
-                del self.available_agents["browser"]
+
             return
         
     async def _list_agents(self, user_id: str = None, match: str = None):
@@ -176,13 +175,53 @@ class AgentManager:
         for agent in agents:
             await self._save_agent(agent, flush)  
         return
+    
+    async def _load_default_agents(self):
+        self._create_agent_by_prebuilt(user_id="share", 
+                                        name="researcher", 
+                                        nick_name="researcher", 
+                                        llm_type=AGENT_LLM_MAP["researcher"], 
+                                        tools=[tavily_tool, crawl_tool], 
+                                        prompt=get_prompt_template("researcher"),
+                                        description="This agent specializes in research tasks by utilizing search engines and web crawling. It can search for information using keywords, crawl specific URLs to extract content, and synthesize findings into comprehensive reports. The agent excels at gathering information from multiple sources, verifying relevance and credibility, and presenting structured conclusions based on collected data."),
         
+        self._create_agent_by_prebuilt(user_id="share", 
+                                        name="coder", 
+                                        nick_name="coder", 
+                                        llm_type=AGENT_LLM_MAP["coder"], 
+                                        tools=[python_repl_tool, bash_tool], 
+                                        prompt=get_prompt_template("coder"),
+                                        description="This agent specializes in software engineering tasks using Python and bash scripting. It can analyze requirements, implement efficient solutions, and provide clear documentation. The agent excels at data analysis, algorithm implementation, system resource management, and environment queries. It follows best practices, handles edge cases, and integrates Python with bash when needed for comprehensive problem-solving."),
+        
+        
+        self._create_agent_by_prebuilt(user_id="share", 
+                                        name="browser", 
+                                        nick_name="browser", 
+                                        llm_type=AGENT_LLM_MAP["browser"], 
+                                        tools=[browser_tool], 
+                                        prompt=get_prompt_template("browser"), 
+                                        description="This agent specializes in interacting with web browsers. It can navigate to websites, perform actions like clicking, typing, and scrolling, and extract information from web pages. The agent is adept at handling tasks such as searching specific websites, interacting with web elements, and gathering online data. It is capable of operations like logging in, form filling, clicking buttons, and scraping content."),
+    
+        self._create_agent_by_prebuilt(user_id="share", 
+                                        name="reporter", 
+                                        nick_name="reporter", 
+                                        llm_type=AGENT_LLM_MAP["reporter"], 
+                                        tools=[], 
+                                        prompt=get_prompt_template("reporter"), 
+                                        description="This agent specializes in creating clear, comprehensive reports based solely on provided information and verifiable facts. It presents data objectively, organizes information logically, and highlights key findings using professional language. The agent structures reports with executive summaries, detailed analysis, and actionable conclusions while maintaining strict data integrity and never fabricating information.")
+
+                    
     async def _load_agents(self, user_agent_flag):
+        await self._load_default_agents()
         load_tasks = []
         for agent_path in self.agents_dir.glob("*.json"):
             agent_name = agent_path.stem
-            if agent_name not in [agent.agent_name for agent in self.available_agents.values()]:
+            if agent_name not in self.available_agents.keys():
                 load_tasks.append(self._load_agent(agent_name, user_agent_flag))
+                
+        if not user_agent_flag and "browser" in self.available_agents:
+            del self.available_agents["browser"]
+            
 
         if load_tasks:
             results = await asyncio.gather(*load_tasks, return_exceptions=True)

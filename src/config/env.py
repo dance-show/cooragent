@@ -27,11 +27,11 @@ CODE_API_KEY = os.getenv("CODE_API_KEY")
 CODE_BASE_URL = os.getenv("CODE_BASE_URL")
 CODE_MODEL = os.getenv("CODE_MODEL")
 
-USR_AGENT = os.getenv("USR_AGENT", True)
-MCP_AGENT = os.getenv("MCP_AGENT", False)
-USE_MCP_TOOLS = os.getenv("USE_MCP_TOOLS", True)
-USE_BROWSER = os.getenv("USE_BROWSER", False)
-DEBUG = os.getenv("DEBUG", False)
+USR_AGENT = bool(os.getenv("USR_AGENT", True))
+MCP_AGENT = bool(os.getenv("MCP_AGENT", False))
+USE_MCP_TOOLS = bool(os.getenv("USE_MCP_TOOLS", True))
+USE_BROWSER = bool(os.getenv("USE_BROWSER", False))
+DEBUG = bool(os.getenv("DEBUG", False))
 
 if DEBUG != "True":
     logging.basicConfig(

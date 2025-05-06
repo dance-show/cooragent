@@ -28,7 +28,7 @@ async def agent_factory_node(state: State) -> Command[Literal["publisher","__end
     
     tools = [agent_manager.available_tools[tool["name"]] for tool in response["selected_tools"]]
 
-    await agent_manager._create_agent_by_prebuilt(
+    agent_manager._create_agent_by_prebuilt(
         user_id=state["user_id"],
         name=response["agent_name"],
         nick_name=response["agent_name"],
