@@ -84,7 +84,7 @@ class AgentManager:
 
     async def load_mcp_tools(self):
         async with MultiServerMCPClient(mcp_client_config()) as client:
-            mcp_tools = await client.get_tools() # await may not be needed
+            mcp_tools = client.get_tools() # await may not be needed
             for _tool in mcp_tools:
                 self.available_tools[_tool.name] = _tool
                     

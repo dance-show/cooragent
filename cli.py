@@ -238,9 +238,10 @@ def cli(ctx):
 @click.option('--message', '-m', required=True, multiple=True, help='Message content (use multiple times for multiple messages)')
 @click.option('--debug/--no-debug', default=False, help='Enable debug mode')
 @click.option('--deep-thinking/--no-deep-thinking', default=True, help='Enable deep thinking mode')
+@click.option('--search-before-planning/--no-search-before-planning', default=True, help='Enable search before planning')
 @click.option('--agents', '-a', multiple=True, help='List of collaborating Agents (use multiple times to add multiple Agents)')
 @async_command
-async def run(ctx, user_id, task_type, message, debug, deep_thinking, agents):
+async def run(ctx, user_id, task_type, message, debug, deep_thinking, search_before_planning, agents):
     """Run the agent workflow"""
     server = ctx.obj['server']
     
@@ -251,6 +252,7 @@ async def run(ctx, user_id, task_type, message, debug, deep_thinking, agents):
     config_table.add_row("Task Type", task_type)
     config_table.add_row("Debug Mode", "✅ Enabled" if debug else "❌ Disabled")
     config_table.add_row("Deep Thinking", "✅ Enabled" if deep_thinking else "❌ Disabled")
+    config_table.add_row("Search Before Planning", "✅ Enabled" if search_before_planning else "❌ Disabled")
     console.print(config_table)
     
     msg_table = Table(title="Message History", show_header=True, header_style="bold magenta")
@@ -274,7 +276,7 @@ async def run(ctx, user_id, task_type, message, debug, deep_thinking, agents):
         messages=messages,
         debug=debug,
         deep_thinking_mode=deep_thinking,
-        search_before_planning=True,
+        search_before_planning=search_before_planning,
         coor_agents=list(agents)
     )
     
@@ -707,6 +709,7 @@ def help():
     help_table.add_row("  -m/--message", "Message content (use multiple times)")
     help_table.add_row("  --debug/--no-debug", "Enable/disable debug mode")
     help_table.add_row("  --deep-thinking/--no-deep-thinking", "Enable/disable deep thinking mode")
+    help_table.add_row("  --search-before-planning/--no-search-before-planning", "Enable/disable search before planning (default: enabled)")
     help_table.add_row("  -a/--agents", "List of collaborating Agents")
     help_table.add_row()
     
