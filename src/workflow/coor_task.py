@@ -12,6 +12,8 @@ from src.manager import agent_manager
 from src.prompts.template import apply_prompt
 from langgraph.prebuilt import create_react_agent
 from src.workflow.graph import AgentWorkflow
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from src.manager.mcp import mcp_client_config
 
 logger = logging.getLogger(__name__)
 
@@ -81,11 +83,15 @@ async def publisher_node(state: State) -> Command[Literal["agent_proxy", "agent_
 async def agent_proxy_node(state: State) -> Command[Literal["publisher","__end__"]]:
     """Proxy node that acts as a proxy for the agent."""
     _agent = agent_manager.available_agents[state["next"]]
-    agent = create_react_agent(
-        get_llm_by_type(_agent.llm_type),
-        tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
-        prompt=apply_prompt(state, _agent.prompt),
-    )
+    async with MultiServerMCPClient(mcp_client_config()) as client:
+        mcp_tools = client.get_tools()
+        for _tool in mcp_tools:
+            agent_manager.available_tools[_tool.name] = _tool
+        agent = create_react_agent(
+            get_llm_by_type(_agent.llm_type),
+            tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
+            prompt=apply_prompt(state, _agent.prompt),
+        )
 
     response = await agent.ainvoke(state)
 

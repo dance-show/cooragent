@@ -18,7 +18,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from pathlib import Path
 from src.interface.agent_types import Agent
 from src.config.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
-from src.mcp.mcp_config import mcp_client_config
+from src.manager.mcp import mcp_client_config
 import logging
 import re
 
@@ -84,7 +84,7 @@ class AgentManager:
 
     async def load_mcp_tools(self):
         async with MultiServerMCPClient(mcp_client_config()) as client:
-            mcp_tools = client.get_tools() # await may not be needed
+            mcp_tools = client.get_tools()
             for _tool in mcp_tools:
                 self.available_tools[_tool.name] = _tool
                     
