@@ -1,15 +1,14 @@
 import logging
-from typing import Optional, Dict, Any, AsyncGenerator
+import uuid
 import asyncio
+from typing import Optional, Dict, Any, AsyncGenerator
 from src.workflow import build_graph, agent_factory_graph
-from langchain_community.adapters.openai import convert_message_to_dict
 from src.manager import agent_manager
 from src.interface.agent_types import TaskType
-import uuid
-from langchain_core.messages import HumanMessage, SystemMessage
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from src.interface.agent_types import State
+from src.config.env import USE_BROWSER
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,14 +24,21 @@ def enable_debug_logging():
 
 logger = logging.getLogger(__name__)
 
-
-DEFAULT_TEAM_MEMBERS_DESCRIPTION = """
-- **`researcher`**: Uses search engines and web crawlers to gather information from the internet. Outputs a Markdown report summarizing findings. Researcher can not do math or programming.
-- **`coder`**: Executes Python or Bash commands, performs mathematical calculations, and outputs a Markdown report. Must be used for all mathematical computations.
-- **`browser`**: Directly interacts with web pages, performing complex operations and interactions. You can also leverage `browser` to perform in-domain search, like Facebook, Instagram, Github, etc.
-- **`reporter`**: Write a professional report based on the result of each step.
-- **`agent_factory`**: Create a new agent based on the user's requirement.
-"""
+if USE_BROWSER:
+    DEFAULT_TEAM_MEMBERS_DESCRIPTION = """
+        - **`researcher`**: Uses search engines and web crawlers to gather information from the internet. Outputs a Markdown report summarizing findings. Researcher can not do math or programming.
+        - **`coder`**: Executes Python or Bash commands, performs mathematical calculations, and outputs a Markdown report. Must be used for all mathematical computations.
+        - **`browser`**: Directly interacts with web pages, performing complex operations and interactions. You can also leverage `browser` to perform in-domain search, like Facebook, Instagram, Github, etc.
+        - **`reporter`**: Write a professional report based on the result of each step.
+        - **`agent_factory`**: Create a new agent based on the user's requirement.
+        """
+else:
+    DEFAULT_TEAM_MEMBERS_DESCRIPTION = """
+        - **`researcher`**: Uses search engines and web crawlers to gather information from the internet. Outputs a Markdown report summarizing findings. Researcher can not do math or programming.
+        - **`coder`**: Executes Python or Bash commands, performs mathematical calculations, and outputs a Markdown report. Must be used for all mathematical computations.
+        - **`reporter`**: Write a professional report based on the result of each step.
+        - **`agent_factory`**: Create a new agent based on the user's requirement.
+        """
 
 TEAM_MEMBERS_DESCRIPTION_TEMPLATE = """
 - **`{agent_name}`**: {agent_description}
@@ -74,13 +80,6 @@ async def run_agent_workflow(
 
     workflow_id = str(uuid.uuid4())
 
-    DEFAULT_TEAM_MEMBERS_DESCRIPTION = """
-    - **`researcher`**: Uses search engines and web crawlers to gather information from the internet. Outputs a Markdown report summarizing findings. Researcher can not do math or programming.
-    - **`coder`**: Executes Python or Bash commands, performs mathematical calculations, and outputs a Markdown report. Must be used for all mathematical computations.
-    - **`browser`**: Directly interacts with web pages, performing complex operations and interactions. You can also leverage `browser` to perform in-domain search, like Facebook, Instagram, Github, etc.
-    - **`reporter`**: Write a professional report based on the result of each step.Please note that this agent is unable to perform any code or command-line operations.
-    - **`agent_factory`**: Create a new agent based on the user's requirement.
-    """
 
     TEAM_MEMBERS_DESCRIPTION_TEMPLATE = """
     - **`{agent_name}`**: {agent_description}
