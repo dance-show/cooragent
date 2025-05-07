@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_deepseek import ChatDeepSeek
 from typing import Optional
 
-from src.config.env import (
+from src.service.env import (
     REASONING_MODEL,
     REASONING_BASE_URL,
     REASONING_API_KEY,
@@ -16,7 +16,7 @@ from src.config.env import (
     CODE_BASE_URL,
     CODE_API_KEY,
 )
-from src.config.agents import LLMType
+from src.llm.agents import LLMType
 
 
 def create_openai_llm(

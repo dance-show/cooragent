@@ -183,12 +183,17 @@ run -t agent_workflow -u test -m '综合运用任务规划智能体，爬虫智�
 **配置方法：**
 
 1.  **定位/创建配置文件**：
-    在您的项目根目录中找到或创建 `src/config/mcp.json` 文件。
+    在您的项目根目录中找到或创建 `config/mcp.json` 文件。
+
+    ```bash
+    cd config
+    cp mcp.json.example mcp.json
+    ```
 
 2.  **添加 MCP 服务**：
     在此 JSON 文件中定义您的 MCP 服务。每个服务都有一个唯一的键 (key) 和一个配置对象。
 
-    配置文件 (`src/config/mcp.json`) 示例：
+    配置文件 (`config/mcp.json`) 示例：
     ```json
     {
         "mcpServers": {

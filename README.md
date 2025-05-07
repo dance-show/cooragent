@@ -73,7 +73,6 @@ Create a `.env` file in the project root directory and configure the following e
 
 ```bash
 # Note: The Browse tool has a long wait time and is disabled by default. It can be enabled by setting: `USE_BROWSER=True`
-.
 cp .env.example .env
 ```
 
@@ -181,12 +180,17 @@ Enhance your Agents by integrating external services and tools via the Model Con
 **Configuration:**
 
 1.  **Locate/Create Config File**:
-    Find or create `src/config/mcp.json` in your project root.
+    Find or create `config/mcp.json` in your project root.
+
+    ```bash
+    cd config
+    cp mcp.json.example mcp.json
+    ```
 
 2.  **Add MCP Services**:
     Define your MCP services in this JSON file. Each service has a unique key and a configuration object.
 
-    Example (`src/config/mcp.json`):
+    Example (`config/mcp.json`):
     ```json
     {
         "mcpServers": {

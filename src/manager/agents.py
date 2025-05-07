@@ -11,13 +11,13 @@ from src.tools import (
     tavily_tool,
 )
 
-from src.llm import get_llm_by_type
-from src.config.agents import AGENT_LLM_MAP
+from src.llm.llm import get_llm_by_type
+from src.llm.agents import AGENT_LLM_MAP
 from langchain_core.tools import tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from pathlib import Path
 from src.interface.agent_types import Agent
-from src.config.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
+from src.service.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
 from src.manager.mcp import mcp_client_config
 import logging
 import re

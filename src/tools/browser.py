@@ -5,9 +5,9 @@ from typing import Optional, ClassVar, Type
 from langchain.tools import BaseTool
 from browser_use import AgentHistoryList, Browser, BrowserConfig
 from browser_use import Agent as BrowserAgent
-from src.llm import vl_llm
+from src.llm.llm import vl_llm
 from src.tools.decorators import create_logged_tool
-from src.config.env import CHROME_INSTANCE_PATH
+from src.service.env import CHROME_INSTANCE_PATH
 
 expected_browser = None
 

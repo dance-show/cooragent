@@ -6,7 +6,7 @@ import logging
 from src.utils import get_project_root
 
 logger = logging.getLogger(__name__)
-CONFIG_FILE_PATH = str(get_project_root()) + "/src/config/mcp.json"
+CONFIG_FILE_PATH = str(get_project_root()) + "/config/mcp.json"
 
 def mcp_client_config():
     _mcp_client_config = {}

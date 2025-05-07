@@ -1,5 +1,5 @@
 import pytest
-from src.crawler import Crawler
+from src.tools.crawler import Crawler
 
 
 def test_crawler_initialization():
