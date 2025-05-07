@@ -238,7 +238,7 @@ def cli(ctx):
 @click.option('--message', '-m', required=True, multiple=True, help='Message content (use multiple times for multiple messages)')
 @click.option('--debug/--no-debug', default=False, help='Enable debug mode')
 @click.option('--deep-thinking/--no-deep-thinking', default=True, help='Enable deep thinking mode')
-@click.option('--search-before-planning/--no-search-before-planning', default=True, help='Enable search before planning')
+@click.option('--search-before-planning/--no-search-before-planning', default=False, help='Enable search before planning')
 @click.option('--agents', '-a', multiple=True, help='List of collaborating Agents (use multiple times to add multiple Agents)')
 @async_command
 async def run(ctx, user_id, task_type, message, debug, deep_thinking, search_before_planning, agents):

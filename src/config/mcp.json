@@ -12,7 +12,7 @@
       "AMAP": {
         "url": "https://mcp.amap.com/sse",
         "env": {
-          "AMAP_MAPS_API_KEY": "YOUR_AMAP_MAPS_API_KEY_HERE"
+          "AMAP_MAPS_API_KEY": "AMAP_MAPS_API_KEY"
         }
       }
     }

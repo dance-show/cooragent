@@ -62,13 +62,15 @@ def mcp_client_config():
             sse_config["url"] = sse_config["url"] + '?key=' + env_value
             sse_config["transport"] = "sse"
             _mcp_client_config[key] = sse_config
+            del _mcp_client_config[key]["env"]
             
         elif transport_type == "stdio":
             if "args" not in value: 
                 logger.error(f"Invalid configuration for MCP server {key} (transport stdio): 'args' key is missing. Skipping.")
                 continue
             _mcp_client_config[key] = value.copy()
-            _mcp_client_config["transport"] = "stdio"
+            _mcp_client_config[key]["transport"] = "stdio"
+            del _mcp_client_config[key]["env"]
 
             
     return _mcp_client_config
