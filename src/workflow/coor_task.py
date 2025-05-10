@@ -3,8 +3,8 @@ import json
 from copy import deepcopy
 from langgraph.types import Command
 from typing import Literal
-from src.llm import get_llm_by_type
-from src.config.agents import AGENT_LLM_MAP
+from src.llm.llm import get_llm_by_type
+from src.llm.agents import AGENT_LLM_MAP
 from src.prompts.template import apply_prompt_template
 from src.tools.search import tavily_tool
 from src.interface.agent_types import State, Router
@@ -12,6 +12,8 @@ from src.manager import agent_manager
 from src.prompts.template import apply_prompt
 from langgraph.prebuilt import create_react_agent
 from src.workflow.graph import AgentWorkflow
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from src.manager.mcp import mcp_client_config
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +22,10 @@ async def agent_factory_node(state: State) -> Command[Literal["publisher","__end
     """Node for the create agent agent that creates a new agent."""
     logger.info("Agent Factory Start to work \n")
     messages = apply_prompt_template("agent_factory", state)
-    response = await (
+    response = (
         get_llm_by_type(AGENT_LLM_MAP["agent_factory"])
         .with_structured_output(Router)
-        .ainvoke(messages)
+        .invoke(messages)
     )
     
     tools = [agent_manager.available_tools[tool["name"]] for tool in response["selected_tools"]]
@@ -81,13 +83,17 @@ async def publisher_node(state: State) -> Command[Literal["agent_proxy", "agent_
 async def agent_proxy_node(state: State) -> Command[Literal["publisher","__end__"]]:
     """Proxy node that acts as a proxy for the agent."""
     _agent = agent_manager.available_agents[state["next"]]
-    agent = create_react_agent(
-        get_llm_by_type(_agent.llm_type),
-        tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
-        prompt=apply_prompt(state, _agent.prompt),
-    )
+    async with MultiServerMCPClient(mcp_client_config()) as client:
+        mcp_tools = client.get_tools()
+        for _tool in mcp_tools:
+            agent_manager.available_tools[_tool.name] = _tool
+        agent = create_react_agent(
+            get_llm_by_type(_agent.llm_type),
+            tools=[agent_manager.available_tools[tool.name] for tool in _agent.selected_tools],
+            prompt=apply_prompt(state, _agent.prompt),
+        )
 
-    response = await agent.ainvoke(state)
+        response = await agent.ainvoke(state)
 
     return Command(
         update={

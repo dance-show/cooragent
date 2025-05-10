@@ -8,7 +8,7 @@ from src.interface.agent_types import TaskType
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from src.interface.agent_types import State
-from src.config.env import USE_BROWSER
+from src.service.env import USE_BROWSER
 
 logging.basicConfig(
     level=logging.INFO,

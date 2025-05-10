@@ -73,7 +73,6 @@ Create a `.env` file in the project root directory and configure the following e
 
 ```bash
 # Note: The Browse tool has a long wait time and is disabled by default. It can be enabled by setting: `USE_BROWSER=True`
-.
 cp .env.example .env
 ```
 
@@ -174,39 +173,55 @@ remove-agent -n <agent_name> -u <user-id>
 run -t agent_workflow -u test -m 'Use the task planning agent, web crawler agent, code execution agent, browser operation agent, report writing agent, and file operation agent to plan a trip to Yunnan for the May Day holiday in 2025. First, run the web crawler agent to fetch information about Yunnan tourist attractions, use the browser operation agent to browse the attraction information and select the top 10 most worthwhile attractions. Then, plan a 5-day itinerary, use the report writing agent to generate a travel report, and finally use the file operation agent to save the report as a PDF file.'
 ```
 
-## Create an Agent via MCP
-```python
-server_params = StdioServerParameters(
-    command="python",
-    args=[str(get_project_root()) + "/src/mcp/excel_mcp/server.py"]
-)
+## Integrate MCP Services (like Claude Desktop)
 
-async def excel_agent():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            # Initialize the connection
-            await session.initialize()
-            # Get tools
-            tools = await load_mcp_tools(session)
-            # Create and run the agent
-            agent = create_react_agent(model, tools)
-            return agent
+Enhance your Agents by integrating external services and tools via the Model Context Protocol (MCP). This is similar to how desktop AI assistants like Claude Desktop manage external functionalities.
+
+**Configuration:**
+
+1.  **Locate/Create Config File**:
+    Find or create `config/mcp.json` in your project root.
+
+    ```bash
+    cd ./config
+    cp mcp.json.example mcp.json
+    ```
+
+2.  **Add MCP Services**:
+    Define your MCP services in this JSON file. Each service has a unique key and a configuration object.
+
+    Example (`config/mcp.json`):
+    ```json
+    {
+        "mcpServers": {
+          "aws-kb-retrieval": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-aws-kb-retrieval"],
+            "env": {
+              "AWS_ACCESS_KEY_ID": "YOUR_ACCESS_KEY_HERE",
+              "AWS_SECRET_ACCESS_KEY": "YOUR_SECRET_ACCESS_KEY_HERE",
+              "AWS_REGION": "YOUR_AWS_REGION_HERE"
+            }
+          },
+          "AMAP": {
+            "url": "https://mcp.amap.com/sse",
+            "env": {
+              "AMAP_MAPS_API_KEY": "AMAP_MAPS_API_KEY"
+            }
+          }
+        }
+    }
+    ```
 
 
-agent = asyncio.run(excel_agent())
-agent_obj = Agent(user_id="share", 
-                  agent_name="mcp_excel_agent", 
-                  nick_name="mcp_excel_agent", 
-                  description="The agent is good at manipulating excel files, which includes creating, reading, writing, and analyzing excel files", 
-                  llm_type=LLMType.BASIC, 
-                  selected_tools=[], 
-                  prompt="")
 
-MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
+**How it Works:**
+
+Once configured, Cooragent registers these MCP services as available tools. Agents can then select and use these tools during task planning and execution, enabling more complex functionalities.
+After configuration of AMAP mcpServers (GaoDe Map) as the example, you may be able to run the case below: 
 ```
-Code can be found at [src/mcp/excel_agent.py](./src/mcp/excel_agent.py).
-**Note** : To enable MCP support, you need to set MCP_AGENT to True in the .env file (it defaults to False).
-
+Create a navigation agent that focuses on navigation and uses map-related tools to plan the route from Beijing West Railway Station to the Forbidden City.
+```
 
 ## Documentation & Support
 - [Frequently Asked Questions (FAQ)](./docs/QA.md)

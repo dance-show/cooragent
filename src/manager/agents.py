@@ -11,14 +11,14 @@ from src.tools import (
     tavily_tool,
 )
 
-from src.llm import get_llm_by_type
-from src.config.agents import AGENT_LLM_MAP
+from src.llm.llm import get_llm_by_type
+from src.llm.agents import AGENT_LLM_MAP
 from langchain_core.tools import tool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from pathlib import Path
 from src.interface.agent_types import Agent
-from src.config.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
-from src.mcp.mcp_config import mcp_client_config
+from src.service.env import USR_AGENT, USE_BROWSER,USE_MCP_TOOLS
+from src.manager.mcp import mcp_client_config
 import logging
 import re
 
@@ -84,7 +84,7 @@ class AgentManager:
 
     async def load_mcp_tools(self):
         async with MultiServerMCPClient(mcp_client_config()) as client:
-            mcp_tools = client.get_tools() # await may not be needed
+            mcp_tools = client.get_tools()
             for _tool in mcp_tools:
                 self.available_tools[_tool.name] = _tool
                     
@@ -101,7 +101,7 @@ class AgentManager:
         if USE_MCP_TOOLS:
             await self.load_mcp_tools()
 
-    async def _save_agent(self, agent: Agent, flush=False):
+    def _save_agent(self, agent: Agent, flush=False):
         agent_path = self.agents_dir / f"{agent.agent_name}.json"
         agent_prompt_path = self.prompt_dir / f"{agent.agent_name}.md"
         if not flush and agent_path.exists():
@@ -113,7 +113,7 @@ class AgentManager:
 
         logger.info(f"agent {agent.agent_name} saved.")
         
-    async def _remove_agent(self, agent_name: str):
+    def _remove_agent(self, agent_name: str):
         agent_path = self.agents_dir / f"{agent_name}.json"
         agent_prompt_path = self.prompt_dir / f"{agent_name}.md"
 
@@ -158,7 +158,7 @@ class AgentManager:
             agents = [agent for agent in agents if re.match(match, agent.agent_name)]
         return agents
 
-    async def _edit_agent(self, agent: Agent):
+    def _edit_agent(self, agent: Agent):
         try:
             _agent = self.available_agents[agent.agent_name]
             _agent.nick_name = agent.nick_name
@@ -166,14 +166,14 @@ class AgentManager:
             _agent.selected_tools = agent.selected_tools
             _agent.prompt = agent.prompt
             _agent.llm_type = agent.llm_type
-            await self._save_agent(_agent, flush=True)
+            self._save_agent(_agent, flush=True)
             return "success"
         except Exception as e:
             raise NotFoundAgentError(f"agent {agent.agent_name} not found.")
     
-    async def _save_agents(self, agents: list[Agent], flush=False):
+    def _save_agents(self, agents: list[Agent], flush=False):
         for agent in agents:
-            await self._save_agent(agent, flush)  
+            self._save_agent(agent, flush)  
         return
     
     async def _load_default_agents(self):

@@ -42,6 +42,7 @@ custom_theme = Theme({
     "command": "bold yellow",
     "highlight": "bold cyan",
     "agent_name": "bold blue",
+    "agent_nick_name": "bold magenta",
     "agent_desc": "green",
     "agent_type": "magenta",
     "tool_name": "bold blue",
@@ -238,7 +239,7 @@ def cli(ctx):
 @click.option('--message', '-m', required=True, multiple=True, help='Message content (use multiple times for multiple messages)')
 @click.option('--debug/--no-debug', default=False, help='Enable debug mode')
 @click.option('--deep-thinking/--no-deep-thinking', default=True, help='Enable deep thinking mode')
-@click.option('--search-before-planning/--no-search-before-planning', default=True, help='Enable search before planning')
+@click.option('--search-before-planning/--no-search-before-planning', default=False, help='Enable search before planning')
 @click.option('--agents', '-a', multiple=True, help='List of collaborating Agents (use multiple times to add multiple Agents)')
 @async_command
 async def run(ctx, user_id, task_type, message, debug, deep_thinking, search_before_planning, agents):
@@ -452,6 +453,7 @@ async def list_agents(ctx, user_id, match):
         
         table = Table(title=f"Agent list for user [highlight]{user_id}[/highlight]", show_header=True, header_style="bold magenta", border_style="cyan")
         table.add_column("Name", style="agent_name")
+        table.add_column("Nickname", style="agent_nick_name")
         table.add_column("Description", style="agent_desc")
         table.add_column("Tools", style="agent_type")
         
@@ -462,7 +464,7 @@ async def list_agents(ctx, user_id, match):
                 tools = []
                 for tool in agent.get("selected_tools", []):
                     tools.append(tool.get("name", ""))
-                table.add_row(agent.get("agent_name", ""), agent.get("description", ""), ', '.join(tools))
+                table.add_row(agent.get("agent_name", ""), agent.get("nick_name", ""), agent.get("description", ""), ', '.join(tools))
                 count += 1
             except:
                 stream_print(f"[danger]Parsing error: {agent_json}[/danger]")
@@ -491,13 +493,14 @@ async def list_default_agents(ctx):
         
         table = Table(title="Default Agent List", show_header=True, header_style="bold magenta", border_style="cyan")
         table.add_column("Name", style="agent_name")
+        table.add_column("Nickname", style="agent_nick_name")
         table.add_column("Description", style="agent_desc")
         
         count = 0
         async for agent_json in server._list_default_agents():
             try:
                 agent = json.loads(agent_json)
-                table.add_row(agent.get("agent_name", ""), agent.get("description", ""))
+                table.add_row(agent.get("agent_name", ""),agent.get("nick_name", ""), agent.get("description", ""))
                 count += 1
             except:
                 stream_print(f"[danger]Parsing error: {agent_json}[/danger]")

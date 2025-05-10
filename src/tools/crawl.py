@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from .decorators import log_io
 
-from src.crawler import Crawler
+from src.tools.crawler import Crawler
 
 logger = logging.getLogger(__name__)
 

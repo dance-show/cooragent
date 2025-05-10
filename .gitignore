@@ -18,3 +18,4 @@ agent_history.gif
 store
 .vscode/*
 .DS_Store
+config/mcp.json

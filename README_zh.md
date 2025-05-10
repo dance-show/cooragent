@@ -176,38 +176,53 @@ remove-agent -n <agent_name> -u <user-id>
 run -t agent_workflow -u test -m '综合运用任务规划智能体，爬虫智能体，代码运行智能体，浏览器操作智能体，报告撰写智能体，文件操作智能体为我规划一个 2025 年五一期间去云南旅游的行程。首先运行爬虫智能体爬取云南旅游的景点信息，并使用浏览器操作智能体浏览景点信息，选取最值得去的 10 个景点。然后规划一个 5 天的旅游的行程，使用报告撰写智能体生成一份旅游报告，最后使用文件操作智能体将报告保存为 pdf 文件。'
 ```
 
-## 通过 MCP 方式创建智能体
+## 集成 MCP 服务 (类似 Claude Desktop)
+
+通过模型上下文协议 (MCP) 集成外部服务和工具，以增强您的智能体 (Agent) 的能力。这类似于某些桌面 AI 助手 (如 Claude Desktop) 管理外部功能的方式。
+
+**配置方法：**
+
+1.  **定位/创建配置文件**：
+    在您的项目根目录中找到或创建 `config/mcp.json` 文件。
+
+    ```bash
+    cd ./config
+    cp mcp.json.example mcp.json
+    ```
+
+2.  **添加 MCP 服务**：
+    在此 JSON 文件中定义您的 MCP 服务。每个服务都有一个唯一的键 (key) 和一个配置对象。
+
+    配置文件 (`config/mcp.json`) 示例：
+    ```json
+    {
+        "mcpServers": {
+          "aws-kb-retrieval": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-aws-kb-retrieval"],
+            "env": {
+              "AWS_ACCESS_KEY_ID": "YOUR_ACCESS_KEY_HERE",
+              "AWS_SECRET_ACCESS_KEY": "YOUR_SECRET_ACCESS_KEY_HERE",
+              "AWS_REGION": "YOUR_AWS_REGION_HERE"
+            }
+          },
+          "AMAP": {
+            "url": "https://mcp.amap.com/sse",
+            "env": {
+              "AMAP_MAPS_API_KEY": "AMAP_MAPS_API_KEY"
+            }
+          }
+        }
+    }
+    ```
+
+**工作原理：**
+
+配置完成后，Cooragent 会自动将您在 `mcp.json` 中定义的这些 MCP 服务注册为可用工具。之后，智能体 (Agent) 在规划和执行任务时便可以选择和使用这些工具，从而实现更复杂的功能。
+如上配置好高德地图相关工具后，你可以尝试如下的使用案例：
 ```
-server_params = StdioServerParameters(
-    command="python",
-    args=[str(get_project_root()) + "/src/mcp/excel_mcp/server.py"]
-)
-
-async def excel_agent():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(read, write) as session:
-            # Initialize the connection
-            await session.initialize()
-            # Get tools
-            tools = await load_mcp_tools(session)
-            # Create and run the agent
-            agent = create_react_agent(model, tools)
-            return agent
-
-
-agent = asyncio.run(excel_agent())
-agent_obj = Agent(user_id="share", 
-                  agent_name="mcp_excel_agent", 
-                  nick_name="mcp_excel_agent", 
-                  description="The agent are good at manipulating excel files, which includes creating, reading, writing, and analyzing excel files", 
-                  llm_type=LLMType.BASIC, 
-                  selected_tools=[], 
-                  prompt="")
-
-MCPManager.register_agent("mcp_excel_agent", agent, agent_obj)
+创建一个导航智能体，专注于导航，使用地图相关工具，规划如何从北京西站到故宫。
 ```
-代码见 [src/mcp/excel_agent.py](./src/mcp/excel_agent.py)。
-**注意**: 要开启 MCP 的支持需要在 `.env` 文件中将 `MCP_AGENT` 设置为 True （默认为False）。
 
 
 ## 文档 & 支持

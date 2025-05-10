@@ -23,7 +23,7 @@ We sincerely invite all enterprises or teams currently using or considering usin
 1.  **Your Company/Team Name**
 2.  **Description of Your Current or Planned Business Scenario**: Please describe in as much detail as possible the business problems you hope to solve with Cooragent, the application scenarios, expected goals, etc.
 
-**Submission Email**: z-wang22@mails.tsinghua.edu.cn
+**Submission Email**: 18910156608@163.com
 
 ## We Look Forward to Your Participation
 
