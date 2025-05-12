@@ -2,7 +2,7 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Wechat](https://img.shields.io/badge/WeChat-cooragent-brightgreen?logo=wechat&logoColor=white)](./assets/wechat_community.jpg)
-[![Discord Follow](https://dcbadge.vercel.app/api/server/pbxCWH5D?style=flat)](https://discord.gg/pbxCWH5D)
+[![Discord Follow](https://dcbadge.vercel.app/api/server/pbxCWH5D?style=flat)](https://discord.gg/rk2PvxZEXW)
 
 [English](./README.md) | [简体中文](./README_zh.md)
 
