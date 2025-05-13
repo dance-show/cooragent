@@ -1,0 +1,131 @@
+{
+    "workflow_mode": "agent_workflow",
+    "id": 1,
+    "version": 1,
+    "description": "multi-agent workflow for task",
+    "label": "agent_workflow_id_1",
+    "plannig_steps": [                                                                                                                                                                                            
+            {                                                                                                                                                                                                                          
+              "agent_name": "researcher",                                                                                                                                                                                              
+              "title": "搜索北京最热门旅游景点及交通方式",                                                                                                                                                                             
+              "description": "使用搜索引擎查找北京当前最热门的旅游景点，并查询从北京西站前往该景点的公共交通方式（如地铁或公交线路）。",                                                                                               
+              "note": "确保输出包含景点名称、简要介绍以及具体交通指引。"                                                                                                                                                               
+            },                                                                                                                                                                                                                         
+            {                                                                                                                                                                                                                          
+              "agent_name": "reporter",                                                                                                                                                                                                
+              "title": "撰写推荐报告",                                                                                                                                                                                                 
+              "description": "根据前一步的研究结果，整理并输出一份报告，内容包括推荐的景点名称、从北京西站到景点的交通方式，以及推荐理由。",                                                                                           
+              "note": "报告应以清晰易懂的语言呈现。"                                                                                                                                                                                   
+            }                                                                                                                                                                                                                          
+    ],
+    "system_nodes": [
+        {
+            "type": "system_agent",
+            "name": "coordinator",
+            "description": "Coordinator node that communicate with customers.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        },
+        {
+            "type": "system_agent",
+            "name": "planner",
+            "description": "Planner node that plan the task.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        },
+        {
+            "type": "system_agent",
+            "name": "publisher",
+            "description": "Publisher node that publish the task.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        },
+        {
+            "type": "system_agent",
+            "name": "agent_factory",
+            "description": "Agent factory node that create the agent.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        }
+    ],
+    "execution_agents": [
+        {
+            "type": "execution_agent",
+            "name": "researcher",
+            "system_prompt": "researcher",
+            "tools": ["google_search"],
+            "description": "使用搜索引擎查找北京当前最热门的旅游景点，并查询从北京西站前往该景点的公共交通方式（如地铁或公交线路）",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        },
+        {
+            "type": "execution_agent",
+            "name": "reporter",
+            "system_prompt": "reporter",
+            "tools": ["google_search"],
+            "description": "根据前一步的研究结果，整理并输出一份报告，内容包括推荐的景点名称、从北京西站到景点的交通方式，以及推荐理由。",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            },
+            "output_schema": {
+                "type": "object",
+                "properties": {
+                    "message": {"type": "string"}
+                }
+            }
+        }
+    ]
+}
