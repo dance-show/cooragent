@@ -1,9 +1,12 @@
 {
-    "workflow_mode": "agent_workflow",
+    "polish_id": "",
+    "mode": "agent_workflow",
     "id": 1,
     "version": 1,
-    "description": "multi-agent workflow for task",
-    "label": "agent_workflow_id_1",
+    "user_input_messages": [],
+    "deep_thinking_mode": false,
+    "search_before_planning": false,
+    "coor_agents": [],
     "plannig_steps": [                                                                                                                                                                                            
             {                                                                                                                                                                                                                          
               "agent_name": "researcher",                                                                                                                                                                                              

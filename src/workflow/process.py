@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from src.interface.agent_types import State
 from src.service.env import USE_BROWSER
+from src.workflow.cache import WorkflowCache as cache
 
 logging.basicConfig(
     level=logging.INFO,
@@ -56,6 +57,8 @@ async def run_agent_workflow(
     deep_thinking_mode: bool = False,
     search_before_planning: bool = False,
     coor_agents: Optional[list[str]] = None,
+    polish_id: str = "",
+    round: int = 1
 ):
     """Run the agent workflow with the given user input.
 
@@ -66,6 +69,16 @@ async def run_agent_workflow(
     Returns:
         The final state after the workflow completes
     """
+    cache.init_cache(polish_id, 
+                     mode="agent_workflow", 
+                     id={polish_id}-{round},
+                     version=1,
+                     user_input_messages=user_input_messages, 
+                     deep_thinking_mode=deep_thinking_mode,
+                     search_before_planning=search_before_planning,
+                     coor_agents=coor_agents,                   
+                     )
+    
     if task_type == TaskType.AGENT_FACTORY:
         graph = agent_factory_graph()
     else:
