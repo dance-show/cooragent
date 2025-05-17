@@ -2,7 +2,7 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Wechat](https://img.shields.io/badge/WeChat-cooragent-brightgreen?logo=wechat&logoColor=white)](./assets/wechat_community.jpg)
-[![Discord Follow](https://dcbadge.vercel.app/api/server/pbxCWH5D?style=flat)](https://discord.gg/pbxCWH5D)
+[![Discord Follow](https://dcbadge.vercel.app/api/server/ZU6p5nEYgB?style=flat)](https://discord.gg/ZU6p5nEYgB)
 
 [English](./README.md) | [简体中文](./README_zh.md)
 
@@ -248,7 +248,37 @@ Cooragent 在设计上追求极致的开放性和兼容性，确保能够无缝�
   - 状态监控与日志: 通过 API 获取智能体的实时运行状态、性能指标和详细日志，方便监控和调试。
   - 构建自定义界面: 利用 API，您可以为 Cooragent 构建自定义的前端用户界面或管理后台，满足特定的业务需求和用户体验。
 
+## **Cooragent 路线图**
 
+### **✨ 准确性提升**
+
+增强智能体输出的准确性和可靠性。引入更强大的评估机制，利用多轮验证和反馈来确保生成结果的质量，减少错误和不一致性。
+
+### **🎯 垂直场景支持**
+
+构建针对特定行业的智能体工作流。支持教育和新闻摘要等垂直领域，提供定制化解决方案以提高特定场景下的效果。
+
+### **👁️ 多模态智能体支持**
+
+扩展智能体处理和理解多种类型信息的能力。主要目标是添加视觉信息支持，使智能体能够分析图像内容，为更广泛的应用场景奠定基础。
+
+### **👥 社区互动增强**
+
+增强智能体社区内的互动方式。这可能包括智能体分享市场、协作挑战等举措，旨在鼓励用户分享、发现和共同改进智能体。
+
+## **即将推出**
+
+- ✅ **MCP 规模化扩展**  
+  在 Cooragent 中大规模增加更多 MCP 服务器/工具测试和支持
+
+- ⏳ **沙箱支持**  
+  使用 Daytona 支持 Python 和 Shell 的沙箱环境
+
+- ⏳ **可视化拖拽工作流编辑**  
+  提供可视化工作流编辑功能，允许用户通过拖拽操作快速准确地编辑工作流。
+
+- ⏳**长记忆支持**  
+  使用 Redis 和向量数据库来记住用户的长记忆。
 
 ## 贡献
 
@@ -281,3 +311,4 @@ Core contributors: Zheng Wang, Jiachen Du, Shenzhi Wang, Yue Wu, Chi Zhang, Shij
 
 ## 致谢
 特别感谢所有让 cooragent 成为可能的开源项目和贡献者。我们站在巨人的肩膀上。
+

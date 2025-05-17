@@ -2,7 +2,7 @@
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Wechat](https://img.shields.io/badge/WeChat-cooragent-brightgreen?logo=wechat&logoColor=white)](./assets/wechat_community.jpg)
-[![Discord Follow](https://dcbadge.vercel.app/api/server/pbxCWH5D?style=flat)](https://discord.gg/pbxCWH5D)
+[![Discord Follow](https://dcbadge.vercel.app/api/server/ZU6p5nEYgB?style=flat)](https://discord.gg/ZU6p5nEYgB)
 
 [English](./README.md) | [简体中文](./README_zh.md)
 
@@ -152,7 +152,7 @@ python cli.py
 
 Create a Xiaomi stock analysis agent with a single command
 ```
-run -t agent_factory -u test -m 'Create a stock analysis expert agent to analyze the Xiaomi stock trend, today is 22 April, 2025, look over the past month, analyze the big news about Xiaomi, then predict the stock price trend for the next trading day, and provide buy or sell recommendations.'
+run -t agent_workflow -u test -m 'Create a stock analysis expert agent to analyze the Xiaomi stock trend, today is 22 April, 2025, look over the past month, analyze the big news about Xiaomi, then predict the stock price trend for the next trading day, and provide buy or sell recommendations.'
 ```
 
 ## Edit an Agent
@@ -245,6 +245,41 @@ Cooragent is designed with extreme openness and compatibility in mind, ensuring 
   - Task Integration: Integrate Cooragent's task submission and result retrieval capabilities into your own applications, scripts, or workflow engines.
   - Status Monitoring and Logging: Obtain real-time operational status, performance metrics, and detailed logs of agents via API for convenient monitoring and debugging.
   - Build Custom Interfaces: Using the API, you can build custom front-end user interfaces or management backends for Cooragent to meet specific business needs and user experiences.
+
+
+## **Cooragent Roadmap**
+
+
+### **✨ Accuracy Improvement**
+
+Enhancing the accuracy and reliability of agent outputs. Introduce more robust critique mechanisms, utilizing multi-turn validation and feedback to ensure the quality of generated results and reduce errors and inconsistencies.
+
+### **🎯 Vertical Scene Support**
+
+Build targeted Agent Workflows to meet the needs of specific industries. Support vertical domains such as education and news summarization.Providing customized solutions to improve effectiveness in specific scenarios.
+
+### **👁️ Multimodal Agent Support**
+
+Expand the capabilities of Agents to handle and understand multiple types of information. The primary goal is to add support for visual information, enabling Agents to analyze image content and lay the foundation for broader application scenarios.
+
+### **👥 Community Engagement Enhancement**
+
+Enhance interaction methods within the Agent community. This may include an Agent sharing marketplace, collaborative challenges, and other initiatives aimed at encouraging users to share, discover, and collectively improve Agents.
+
+
+## **ToDoList to be coming soon**
+
+- ✅ **MCP Scaling Up**  
+  More MCP Server/Tool test and support in Cooragent
+
+- ⏳ **SandBox Support**  
+  Use Daytona to support sandbox for python and shell
+
+- ⏳ **Visualized drag/drop workflow editing**  
+  Provide visual workflow editing capabilities, allowing users to edit workflows quickly and accurately through drag and drop operations. 
+
+- ⏳ **Long Memmory Support:**  
+  Use Redis and Vector Base to remember Long Memory of User .
 
 
 
