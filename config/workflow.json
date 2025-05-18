@@ -1,7 +1,6 @@
 {
-    "polish_id": "",
+    "workflow_id": "<polish_id>-<lap>",
     "mode": "agent_workflow",
-    "id": 1,
     "version": 1,
     "user_input_messages": [],
     "deep_thinking_mode": false,
@@ -69,11 +68,6 @@
             "name": "agent_factory",
             "description": "Agent factory node that create the agent."
         },
-        "agent_proxy": {
-            "type": "system_agent",
-            "name": "agent_proxy",
-            "description": "Agent proxy node that proxy the task."
-        },
         "researcher": {
             "type": "execution_agent",
             "name": "researcher",
@@ -125,7 +119,7 @@
                 "selected_tools": [],
                 "prompt": ""
             }
-        }  
+        }
     },
     "graph": [
         {

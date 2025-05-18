@@ -14,6 +14,8 @@ from langgraph.prebuilt import create_react_agent
 from src.workflow.graph import AgentWorkflow
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from src.manager.mcp import mcp_client_config
+from src.workflow.cache import WorkflowCache as cache
+
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +96,9 @@ async def agent_proxy_node(state: State) -> Command[Literal["publisher","__end__
         )
 
         response = await agent.ainvoke(state)
+        polish_id = state["workflow_id"]
+        cache.restore_node(polish_id, _agent)
+
 
     return Command(
         update={

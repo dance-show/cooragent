@@ -79,7 +79,7 @@ class State(MessagesState):
     full_plan: str
     deep_thinking_mode: bool
     search_before_planning: bool
-
+    workflow_id: str
 
 class RemoveAgentRequest(BaseModel):
     user_id: str

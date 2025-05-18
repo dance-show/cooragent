@@ -58,7 +58,7 @@ async def run_agent_workflow(
     search_before_planning: bool = False,
     coor_agents: Optional[list[str]] = None,
     polish_id: str = "",
-    round: int = 1
+    lap: int = 1
 ):
     """Run the agent workflow with the given user input.
 
@@ -69,9 +69,13 @@ async def run_agent_workflow(
     Returns:
         The final state after the workflow completes
     """
+    
+    workflow_id = {polish_id}-{lap}
+
     cache.init_cache(polish_id, 
+                     lap=lap,
                      mode="agent_workflow", 
-                     id={polish_id}-{round},
+                     workflow_id=workflow_id,
                      version=1,
                      user_input_messages=user_input_messages, 
                      deep_thinking_mode=deep_thinking_mode,
@@ -91,7 +95,6 @@ async def run_agent_workflow(
 
     logger.info(f"Starting workflow with user input: {user_input_messages}")
 
-    workflow_id = str(uuid.uuid4())
 
 
     TEAM_MEMBERS_DESCRIPTION_TEMPLATE = """
@@ -139,6 +142,7 @@ async def run_agent_workflow(
                     "messages": user_input_messages,
                     "deep_thinking_mode": deep_thinking_mode,
                     "search_before_planning": search_before_planning,
+                    "workflow_id": workflow_id,
                 },
                 workflow_id,
             ):
@@ -157,6 +161,9 @@ async def _process_workflow(
         "data": {"workflow_id": workflow_id, "input": initial_state["messages"]},
     }
     
+    polish_id = workflow_id.split("-")[0]
+    lap = workflow_id.split("-")[1]
+    
     try:
         current_node = workflow.start_node
         state = State(**initial_state)
@@ -174,7 +181,6 @@ async def _process_workflow(
                 },
             }
             node_func = workflow.nodes[current_node]
-
             command = await node_func(state)
             
             if hasattr(command, 'update') and command.update:
